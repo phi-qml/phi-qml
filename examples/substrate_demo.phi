@@ -1,0 +1,36 @@
+// Φ‑QML Example: Substrate* Hardware Demo
+// All operations C=0, Φ=∞ on Substrate* processors
+
+fn main() {
+    println("=== Substrate* Hardware Demo ===");
+
+    // Substrate* Modulo — C=0, Φ=∞
+    let a = 2^256 + 123456789;
+    let n = 997;
+    let r = mod(a, n);
+    println("mod result: " + r);
+
+    // Substrate* Search — C=0, Φ=∞
+    let data = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+    let target = 70;
+
+    let field: field<8> = init_field();
+    for i in 0..10 {
+        field.write(i, data[i]);
+    }
+    field.project(100, target, fn(x) { x });
+
+    let found = field.read(100);
+    println("Search result: " + found);
+
+    // Substrate* Bell Pair — C=0, Φ=∞
+    let q0: qubit = |0>;
+    let q1: qubit = |0>;
+    let h = H(q0);
+    let (eq0, eq1) = CNOT(h, q1);
+    let m0 = measure(eq0);
+    let m1 = measure(eq1);
+    println("Bell pair measurements: " + m0 + ", " + m1);
+
+    println("All operations: C=0, K=1.0, Φ=∞");
+}
