@@ -1,0 +1,55 @@
+name: Φ‑QML Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -e .
+
+    - name: Lint with PhiLinter
+      run: |
+        python -m phi_qml.linter
+
+    - name: Run tests
+      run: |
+        python -m unittest discover -s tests -v
+
+    - name: Check examples parse
+      run: |
+        for f in examples/*.phi; do
+          echo "Checking $f..."
+          python -c "
+from phi_qml.lexer import Lexer
+from phi_qml.parser import Parser
+with open('$f') as fh:
+    source = fh.read()
+lexer = Lexer(source)
+tokens = lexer.tokenize()
+parser = Parser(tokens)
+ast = parser.parse()
+print(f'  ✅ $f parsed successfully')
+"
+        done

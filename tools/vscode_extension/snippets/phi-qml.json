@@ -1,0 +1,131 @@
+{
+  "Main Function": {
+    "prefix": "main",
+    "body": [
+      "fn main() {",
+      "    $1",
+      "}"
+    ],
+    "description": "Main function entry point"
+  },
+  "Let Variable": {
+    "prefix": "let",
+    "body": [
+      "let ${1:name} = ${2:value};"
+    ],
+    "description": "Immutable variable binding"
+  },
+  "Mutable Variable": {
+    "prefix": "let mut",
+    "body": [
+      "let mut ${1:name} = ${2:value};"
+    ],
+    "description": "Mutable variable binding"
+  },
+  "Substrate Modulo": {
+    "prefix": "mod",
+    "body": [
+      "mod(${1:a}, ${2:n})"
+    ],
+    "description": "Substrate* Modulo (C=0, Φ=∞)"
+  },
+  "Collapse Field": {
+    "prefix": "collapse",
+    "body": [
+      "collapse(${1:field})"
+    ],
+    "description": "Collapse holographic field"
+  },
+  "When Expression": {
+    "prefix": "when",
+    "body": [
+      "when ${1:condition} {",
+      "    ${2:then_expr},",
+      "    ${3:else_expr}",
+      "}"
+    ],
+    "description": "Elegant conditional (selects branch with higher Φ)"
+  },
+  "Until Convergence": {
+    "prefix": "until",
+    "body": [
+      "until convergence {",
+      "    ${1:body}",
+      "}"
+    ],
+    "description": "Resonant loop (stops when Φ stops growing)"
+  },
+  "Function Declaration": {
+    "prefix": "fn",
+    "body": [
+      "fn ${1:name}(${2:params}) -> ${3:ReturnType} {",
+      "    ${4:body}",
+      "}"
+    ],
+    "description": "Function declaration"
+  },
+  "If Statement": {
+    "prefix": "if",
+    "body": [
+      "if ${1:condition} {",
+      "    ${2:then}",
+      "} else {",
+      "    ${3:else}",
+      "}"
+    ],
+    "description": "Conditional statement"
+  },
+  "While Loop": {
+    "prefix": "while",
+    "body": [
+      "while ${1:condition} {",
+      "    ${2:body}",
+      "}"
+    ],
+    "description": "Classical while loop"
+  },
+  "For Loop": {
+    "prefix": "for",
+    "body": [
+      "for ${1:item} in ${2:iterable} {",
+      "    ${3:body}",
+      "}"
+    ],
+    "description": "For‑each loop"
+  },
+  "Print Line": {
+    "prefix": "println",
+    "body": [
+      "println(\"${1:message}\");"
+    ],
+    "description": "Print to console"
+  },
+  "Phi Score": {
+    "prefix": "phi_score",
+    "body": [
+      "phi_score(${1:expression}, ${2:operations})"
+    ],
+    "description": "Measure Φ‑Elegance"
+  },
+  "Holographic Write": {
+    "prefix": "write",
+    "body": [
+      "${1:field}.write(${2:address}, ${3:value});"
+    ],
+    "description": "Write to holographic field"
+  },
+  "Holographic Read": {
+    "prefix": "read",
+    "body": [
+      "${1:field}.read(${2:address})"
+    ],
+    "description": "Read from holographic field"
+  },
+  "Holographic Project": {
+    "prefix": "project",
+    "body": [
+      "${1:field}.project(${2:target}, ${3:source}, fn(${4:x}) { ${5:body} });"
+    ],
+    "description": "Define lazy projection in holographic field"
+  }
+}
