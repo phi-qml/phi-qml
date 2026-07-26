@@ -19,6 +19,23 @@ pip install phi-qml
 phi run examples/hello_world.phi
 ```
 
+## Spuštění
+
+```bash
+# Integrace Φ‑Kovy
+python -c "
+from phi_qml.phi_kovy_integration import PhiKovyBridge
+bridge = PhiKovyBridge(mode='quantum')
+results = bridge.run_loop(iterations=5)
+print(bridge.get_learning_report())
+"
+
+# Mobilní monitor (součást cloud API)
+export FLASK_APP=cloud_api_v2.py
+flask run --port 8080
+# Otevřít http://localhost:8080/mobile
+```
+
 License
 
 MIT © 2024 Φ‑QML Contributors
