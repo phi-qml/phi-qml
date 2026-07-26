@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Φ‑QML Mobile Monitor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, 'Courier New', monospace; padding: 16px; min-height: 100vh; }
+        .header { text-align: center; padding: 20px 0; }
+        .header h1 { color: #ffd700; font-size: 2em; }
+        .header .status-dot { display: inline-block; width: 12px; height: 12px; background: #44cc44; border-radius: 50%; margin-right: 8px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .card { background: #1a1a2e; border: 1px solid #333; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+        .card h2 { color: #ffd700; font-size: 1.1em; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px; }
+        .metric { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #222; font-size: 0.95em; }
+        .metric-label { color: #888; }
+        .metric-value { color: #ffd700; font-weight: bold; }
+        .phi-big { text-align: center; font-size: 3em; color: #ffd700; font-weight: bold; margin: 10px 0; }
+        .issues { max-height: 200px; overflow-y: auto; font-size: 0.85em; }
+        .issue { padding: 6px; margin: 4px 0; border-left: 3px solid #ffd700; background: #111; border-radius: 4px; }
+        button { width: 100%; padding: 14px; background: #ffd700; color: #0a0a1a; border: none; border-radius: 8px; font-size: 1em; font-weight: bold; font-family: inherit; cursor: pointer; margin-top: 8px; }
+        button:active { background: #ffed4a; }
+        #output { background: #0d0d1a; border: 1px solid #333; border-radius: 8px; padding: 12px; min-height: 60px; font-size: 0.85em; white-space: pre-wrap; margin-top: 8px; }
+        .footer { text-align: center; padding: 20px 0; color: #555; font-size: 0.8em; }
+        .refresh-bar { display: flex; align-items: center; gap: 8px; color: #888; font-size: 0.8em; margin-bottom: 12px; }
+        .refresh-bar span { color: #44cc44; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><span class="status-dot"></span>Φ‑QML</h1>
+        <p style="color:#888;">Mobile Monitor</p>
+    </div>
+
+    <div class="refresh-bar">
+        <span id="refresh-indicator">●</span>
+        <span id="last-update">Live</span>
+    </div>
+
+    <div class="card">
+        <h2>Current Elegance</h2>
+        <div class="phi-big" id="current-phi">1.0</div>
+        <div class="metric"><span class="metric-label">Elegance Debt</span><span class="metric-value" id="debt">0.00</span></div>
+        <div class="metric"><span class="metric-label">Field States</span><span class="metric-value" id="field-states">256</span></div>
+    </div>
+
+    <div class="card">
+        <h2>Quick Run</h2>
+        <textarea id="source" style="width:100%;height:100px;background:#0d0d1a;color:#e0e0e0;border:1px solid #333;border-radius:8px;padding:10px;font-family:inherit;font-size:0.85em;resize:vertical;">fn main() {
+    let r = mod(42, 13);
+    println("42 mod 13 = " + r);
+}</textarea>
+        <button onclick="runProgram()">▶️ Execute</button>
+        <div id="output"></div>
+    </div>
+
+    <div class="card">
+        <h2>Live Linting</h2>
+        <div id="issues" class="issues">
+            <p style="color:#888;">Issues appear as you type...</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Φ‑QML v1.0 · MIT · Φ</p>
+    </div>
+
+    <script>
+        const API = '/api/v1';
+
+        function updateStatus() {
+            fetch(API + '/status')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('current-phi').textContent =
+                        data.avg_phi ? data.avg_phi.toFixed(2) : '∞';
+                    document.getElementById('debt').textContent =
+                        data.elegance_debt ? data.elegance_debt.toFixed(2) : '0.00';
+                    document.getElementById('field-states').textContent =
+                        data.field_states || 256;
+                });
+            document.getElementById('last-update').textContent =
+                new Date().toLocaleTimeString();
+        }
+
+        function runProgram() {
+            const source = document.getElementById('source').value;
+            document.getElementById('output').textContent = 'Running...';
+            fetch(API + '/run', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({source: source})
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('output').textContent =
+                    data.error ? 'Error: ' + data.error : data.output;
+                updateStatus();
+            });
+        }
+
+        function lintCode() {
+            const source = document.getElementById('source').value;
+            fetch(API + '/lint', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({source: source})
+            })
+            .then(r => r.json())
+            .then(data => {
+                const issuesDiv = document.getElementById('issues');
+                if (!data.issues || data.issues.length === 0) {
+                    issuesDiv.innerHTML = '<p style="color:#44cc44;">✅ Code is elegant!</p>';
+                    return;
+                }
+                issuesDiv.innerHTML = data.issues.map(i =>
+                    `<div class="issue"><strong>L${i.line}</strong>: ${i.message}<br><small>→ ${i.suggestion}</small></div>`
+                ).join('');
+            });
+        }
+
+        document.getElementById('source').addEventListener('input', function() {
+            clearTimeout(this._timer);
+            this._timer = setTimeout(lintCode, 500);
+        });
+
+        updateStatus();
+        lintCode();
+        setInterval(updateStatus, 10000);
+    </script>
+</body>
+</html>
