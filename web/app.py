@@ -207,7 +207,7 @@ def api_run():
     except Exception as e:
         captured.close()
         sys.stdout = old_stdout
-        return jsonify({'error': str(e)})
+        return jsonify({'error': 'Execution failed'})
 
 
 @app.route('/api/collapse')
@@ -222,4 +222,4 @@ def api_collapse():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
     print(f"Φ‑QML Dashboard running at http://localhost:{port}")
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
