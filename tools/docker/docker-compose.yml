@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  phi-cli:
+    build: .
+    image: phi-qml:latest
+    stdin_open: true
+    tty: true
+    command: phi repl
+
+  phi-api:
+    build: .
+    image: phi-qml:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - PHI_QML_MODE=api
+    volumes:
+      - phi_data:/app/data
+    restart: unless-stopped
+
+  phi-simulator:
+    build: .
+    image: phi-qml:latest
+    environment:
+      - PHI_QML_MODE=simulator
+    volumes:
+      - phi_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  phi_data:
