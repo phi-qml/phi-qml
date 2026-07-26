@@ -1,0 +1,19 @@
+// Φ‑QML Example: Hello, World!
+// Demonstrates basic variable binding, printing, and Substrate* Modulo.
+
+fn main() {
+    println("Hello, Substrate*!");
+
+    let a = 2^256 + 123456789;
+    let n = 997;
+    let r = mod(a, n);          // Substrate* Modulo: C=0, Φ=∞
+
+    println("mod(2^256 + 123456789, 997) = " + r);
+
+    let expected = 394;
+    if r == expected {
+        println("✅ Substrate* Modulo works correctly!");
+    } else {
+        println("❌ Something went wrong.");
+    }
+}

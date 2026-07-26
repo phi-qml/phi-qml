@@ -1,0 +1,78 @@
+// Φ‑QML Example: Quantum Cryptography
+// Demonstrates RSA encryption/decryption with Substrate* Modulo,
+// Shor's factorization, and quantum‑resistant signatures.
+
+use std::crypto::*;
+
+@cost(C = O(1), K = 1.0)
+fn rsa_encrypt(message: BigInt, e: BigInt, n: BigInt) -> BigInt {
+    // c = m^e mod n — Substrate* Modulo makes this Φ = ∞
+    mod(pow(message, e), n)
+}
+
+@cost(C = O(1), K = 1.0)
+fn rsa_decrypt(ciphertext: BigInt, d: BigInt, n: BigInt) -> BigInt {
+    // m = c^d mod n
+    mod(pow(ciphertext, d), n)
+}
+
+@cost(C = O(sqrt(n)), K = 1.0)
+fn factorize(n: BigInt) -> (BigInt, BigInt) {
+    // In Substrate*: this would be O(1) via Shor's algorithm.
+    // In classical simulation: trial division.
+    for i in 2..sqrt(n) {
+        if mod(n, i) == 0 {
+            return (i, n / i);
+        }
+    }
+    (n, 1)
+}
+
+fn main() {
+    println("=== Quantum Cryptography Demo ===");
+
+    // RSA parameters
+    let p = 61;
+    let q = 53;
+    let n = p * q;               // 3233
+    let phi_n = (p - 1) * (q - 1);
+    let e = 17;                  // Public exponent
+    let d = mod_inverse(e, phi_n); // Private exponent
+
+    let message = 42;
+    println("Original message: " + message);
+    println("Public key (e=" + e + ", n=" + n + ")");
+    println("Private key d = " + d);
+
+    // Encrypt
+    let encrypted = rsa_encrypt(message, e, n);
+    println("Encrypted: " + encrypted);
+
+    // Decrypt
+    let decrypted = rsa_decrypt(encrypted, d, n);
+    println("Decrypted: " + decrypted);
+
+    if decrypted == message {
+        println("✅ RSA works correctly!");
+    } else {
+        println("❌ RSA failed.");
+    }
+
+    // Factorization attack (Shor's algorithm demo)
+    println("\n--- Shor's Factorization ---");
+    println("Factoring n = " + n + "...");
+    let (f1, f2) = factorize(n);
+    println("Factors: " + f1 + " × " + f2);
+
+    if f1 * f2 == n {
+        println("✅ Factorization succeeded!");
+    } else {
+        println("❌ Factorization failed (try larger search space).");
+    }
+
+    println("\nΦ‑Elegance:");
+    println("  Encryption/Decryption (Substrate*): Φ = ∞");
+    println("  Factorization (classical):          Φ = 1/√n");
+    println("  Factorization (Substrate*):         Φ = ∞ (Shor)");
+    println("  In Substrate*, all crypto either perfect or broken instantly.");
+}

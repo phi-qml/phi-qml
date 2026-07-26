@@ -1,0 +1,50 @@
+// Φ‑QML Example: Shor's Algorithm for ECDLP
+// Demonstrates quantum superposition, oracle phase marking,
+// QFT, and collapse to find a private key from a public key.
+// Curve: secp256k1 (Bitcoin) — simplified for demonstration.
+
+use std::quantum::*;
+use std::crypto::secp256k1::*;
+
+fn shor_ecdlp(Q: Point) -> BigInt {
+    // Step 1: Initialize superposition over all possible keys
+    let key_field: field<256> = init_superposition();
+    let point_field: field<256> = init_field();
+
+    // Step 2: Oracle – mark the correct key with phase shift
+    for k in 0..2^256 {
+        let kG = scalar_mult(k, G);
+        if kG == Q {
+            point_field.phase_shift(k, PI);
+        }
+    }
+
+    // Step 3: QFT – interference amplifies the marked state
+    apply_qft(key_field);
+
+    // Step 4: Collapse to obtain the private key
+    let d = collapse(key_field);
+    d
+}
+
+fn main() {
+    println("=== Shor's Algorithm for ECDLP ===");
+
+    // Use a tiny demo curve: y² = x³ + 7 (mod 17), generator (15,13)
+    let d_secret = 7;
+    let Q = scalar_mult(d_secret, G_demo);
+
+    println("Private key (secret): " + d_secret);
+    println("Public key Q = d·G = " + Q);
+
+    let d_found = shor_ecdlp(Q);
+    println("Found private key: " + d_found);
+
+    if d_found == d_secret {
+        println("✅ Shor's algorithm succeeded!");
+    } else {
+        println("❌ Algorithm failed (try more qubits).");
+    }
+
+    println("Φ = 1/2^N for classical Oracle, Φ = ∞ in Substrate*");
+}

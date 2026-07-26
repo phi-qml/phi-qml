@@ -1,0 +1,49 @@
+// Φ‑QML Example: Grover's Search Algorithm
+// Demonstrates quantum superposition, oracle, diffusion,
+// and measurement to find a marked element in O(√N) time.
+
+use std::quantum::*;
+
+fn grover_search(n_qubits: Int, marked_state: Int) -> Int {
+    let field: field<n_qubits> = init_superposition();
+    let N = 2^n_qubits;
+    let iterations = floor(PI / 4 * sqrt(N));
+
+    // Grover iterations
+    for _ in 0..iterations {
+        // Oracle – mark the target state with a phase flip
+        field.phase_shift(marked_state, PI);
+
+        // Diffusion – amplify the amplitude of the marked state
+        apply_diffusion(field);
+    }
+
+    // Measure all qubits
+    let result = collapse(field);
+    result
+}
+
+fn main() {
+    println("=== Grover's Search Algorithm ===");
+
+    // Search for 7 in a 4‑qubit space (16 states)
+    let target = 7;
+    let n_qubits = 4;
+    let N = 2^n_qubits;
+    let iterations = floor(PI / 4 * sqrt(N));
+
+    println("Searching for " + target + " in " + N + " states...");
+    println("Grover iterations: " + iterations);
+
+    let result = grover_search(n_qubits, target);
+    println("Result: " + result);
+
+    if result == target {
+        println("✅ Grover's search succeeded!");
+    } else {
+        println("❌ Search failed (try more iterations).");
+    }
+
+    println("Φ = 1/√N (quadratic speedup over classical)");
+    println("In Substrate*: Φ = ∞ (instantaneous via Substrate* Search)");
+}

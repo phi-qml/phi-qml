@@ -1,0 +1,30 @@
+// Φ‑QML Example: Bell Pair Creation
+// Demonstrates qubit initialization, Hadamard gate, CNOT,
+// measurement, and collapsing a holographic field.
+
+fn bell_pair() -> (qubit, qubit) {
+    let q0: qubit = |0>;
+    let q1: qubit = |0>;
+
+    let q0_h = H(q0);
+    let (q0_e, q1_e) = CNOT(q0_h, q1);
+
+    (q0_e, q1_e)
+}
+
+fn main() {
+    println("=== Bell Pair Creation ===");
+
+    let (qa, qb) = bell_pair();
+    println("Bell pair created: (|00⟩ + |11⟩)/√2");
+
+    // In a real quantum computer, we would measure.
+    // Here we demonstrate the collapse operation.
+    let field: field<4> = init_field();
+    field.write(0, 1);  // Store classical data in holographic field
+    field.write(1, 1);
+
+    let result = collapse(field);
+    println("Field collapsed to: " + result);
+    println("Φ = ∞ (collapse is instantaneous in Substrate*)");
+}
