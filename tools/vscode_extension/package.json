@@ -1,0 +1,37 @@
+{
+  "name": "phi-qml",
+  "displayName": "Φ‑QML Language Support",
+  "description": "Syntax highlighting, linting, and IntelliSense for Φ‑QML (Phi Quantum Meta‑Language)",
+  "version": "1.0.0",
+  "publisher": "phi-qml",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "phi-qml",
+        "aliases": ["Phi Quantum Meta‑Language", "phi-qml"],
+        "extensions": [".phi"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "phi-qml",
+        "scopeName": "source.phi",
+        "path": "./syntaxes/phi-qml.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "phi-qml",
+        "path": "./snippets/phi-qml.json"
+      }
+    ]
+  }
+}
