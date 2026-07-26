@@ -159,6 +159,12 @@ def index():
     return render_template_string(HTML_TEMPLATE)
 
 
+@app.route('/mobile')
+def mobile():
+    """Serve the mobile monitor interface."""
+    return app.send_static_file('mobile.html')
+
+
 @app.route('/api/status')
 def api_status():
     """Return system status."""
